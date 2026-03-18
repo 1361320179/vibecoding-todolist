@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Dependencies
 node_modules/
 .pnpm-store/
@@ -53,3 +54,7 @@ test-results/
 # Temporary files
 tmp/
 temp/
+=======
+node_modules/
+.env
+>>>>>>> cbda3fed1bf04c5670d78e2684f0a354343f239b
