@@ -1,12 +1,18 @@
 import { Check, CheckCircle2, Circle, Pencil, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 import { Todo, TodoPriority } from '../types/todo';
+import { normalizeDate } from '../utils/date';
 
 interface TodoItemProps {
   todo: Todo;
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
-  onEdit: (id: string, content: string, priority: TodoPriority) => void;
+  onEdit: (
+    id: string,
+    content: string,
+    priority: TodoPriority,
+    date: string
+  ) => void;
 }
 
 const priorityMeta: Record<
@@ -38,18 +44,21 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(todo.content);
   const [editPriority, setEditPriority] = useState<TodoPriority>(todo.priority);
+  const [editDate, setEditDate] = useState(todo.date);
 
   const meta = priorityMeta[todo.priority];
 
   const startEdit = () => {
     setEditContent(todo.content);
     setEditPriority(todo.priority);
+    setEditDate(todo.date);
     setIsEditing(true);
   };
 
   const cancelEdit = () => {
     setEditContent(todo.content);
     setEditPriority(todo.priority);
+    setEditDate(todo.date);
     setIsEditing(false);
   };
 
@@ -59,7 +68,7 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
       return;
     }
 
-    onEdit(todo.id, content, editPriority);
+    onEdit(todo.id, content, editPriority, normalizeDate(editDate));
     setIsEditing(false);
   };
 
@@ -89,17 +98,31 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
               className="w-full px-3 py-2 rounded-md border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-200"
               placeholder="编辑任务"
             />
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">优先级</span>
-              <select
-                value={editPriority}
-                onChange={(e) => setEditPriority(e.target.value as TodoPriority)}
-                className="px-2 py-1 rounded-md border border-gray-300 text-sm"
-              >
-                <option value="high">高</option>
-                <option value="medium">中</option>
-                <option value="low">低</option>
-              </select>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">优先级</span>
+                <select
+                  value={editPriority}
+                  onChange={(e) =>
+                    setEditPriority(e.target.value as TodoPriority)
+                  }
+                  className="px-2 py-1 rounded-md border border-gray-300 text-sm"
+                >
+                  <option value="high">高</option>
+                  <option value="medium">中</option>
+                  <option value="low">低</option>
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">日期</span>
+                <input
+                  type="date"
+                  value={editDate}
+                  onChange={(e) => setEditDate(e.target.value)}
+                  className="px-2 py-1 rounded-md border border-gray-300 text-sm"
+                />
+              </div>
             </div>
           </div>
         ) : (
@@ -111,11 +134,17 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
             >
               {todo.content}
             </div>
-            <span
-              className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${meta.badgeClass}`}
-            >
-              {meta.label}优先级
-            </span>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <span
+                className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${meta.badgeClass}`}
+              >
+                {meta.label}优先级
+              </span>
+              <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+                {todo.date}
+              </span>
+            </div>
           </div>
         )}
       </div>

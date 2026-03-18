@@ -5,5 +5,6 @@ export interface Todo {
   content: string;
   completed: boolean;
   priority: TodoPriority;
+  date: string;
   createdAt: number;
 }

@@ -3,10 +3,16 @@ import { Plus } from 'lucide-react';
 import { TodoPriority } from '../types/todo';
 
 interface TodoInputProps {
+  selectedDate: string;
+  onSelectedDateChange: (date: string) => void;
   onAddTodo: (content: string, priority: TodoPriority) => void;
 }
 
-export function TodoInput({ onAddTodo }: TodoInputProps) {
+export function TodoInput({
+  selectedDate,
+  onSelectedDateChange,
+  onAddTodo,
+}: TodoInputProps) {
   const [input, setInput] = useState('');
   const [priority, setPriority] = useState<TodoPriority>('medium');
 
@@ -24,7 +30,7 @@ export function TodoInput({ onAddTodo }: TodoInputProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-6 space-y-2">
+    <form onSubmit={handleSubmit} className="mb-6 space-y-3">
       <div className="flex gap-2">
         <input
           type="text"
@@ -42,20 +48,35 @@ export function TodoInput({ onAddTodo }: TodoInputProps) {
         </button>
       </div>
 
-      <div className="flex items-center gap-2">
-        <label htmlFor="todo-priority" className="text-sm text-gray-600">
-          优先级
-        </label>
-        <select
-          id="todo-priority"
-          value={priority}
-          onChange={(e) => setPriority(e.target.value as TodoPriority)}
-          className="px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
-        >
-          <option value="high">高</option>
-          <option value="medium">中</option>
-          <option value="low">低</option>
-        </select>
+      <div className="grid gap-2 sm:grid-cols-2">
+        <div className="flex items-center gap-2">
+          <label htmlFor="todo-priority" className="text-sm text-gray-600">
+            优先级
+          </label>
+          <select
+            id="todo-priority"
+            value={priority}
+            onChange={(e) => setPriority(e.target.value as TodoPriority)}
+            className="px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+          >
+            <option value="high">高</option>
+            <option value="medium">中</option>
+            <option value="low">低</option>
+          </select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <label htmlFor="todo-date" className="text-sm text-gray-600">
+            日期
+          </label>
+          <input
+            id="todo-date"
+            type="date"
+            value={selectedDate}
+            onChange={(e) => onSelectedDateChange(e.target.value)}
+            className="px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+          />
+        </div>
       </div>
     </form>
   );

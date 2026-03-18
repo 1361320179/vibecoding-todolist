@@ -1,10 +1,27 @@
 import { Todo, TodoPriority } from '../types/todo';
+import { getTodayDate, normalizeDate } from './date';
 
 const STORAGE_KEY = 'todolist.localhost.todos';
 const LEGACY_STORAGE_KEYS = ['todos'];
 
 const isPriority = (value: unknown): value is TodoPriority => {
   return value === 'high' || value === 'medium' || value === 'low';
+};
+
+const toDateFromTimestamp = (value: unknown): string => {
+  if (typeof value !== 'number') {
+    return getTodayDate();
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return getTodayDate();
+  }
+
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
 };
 
 const canUseLocalStorage = (): boolean => {
@@ -55,6 +72,10 @@ export const loadTodos = (): Todo[] => {
           content,
           completed: Boolean(item.completed),
           priority: isPriority(item.priority) ? item.priority : 'medium',
+          date:
+            typeof item.date === 'string'
+              ? normalizeDate(item.date)
+              : toDateFromTimestamp(item.createdAt),
           createdAt:
             typeof item.createdAt === 'number' ? item.createdAt : Date.now(),
         } satisfies Todo;
